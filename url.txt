@@ -1,3 +1,1 @@
-url: https://calm-places-fly.loca.lt
-
-Tunnel Password: 34.80.57.29
+url: http://localhost:8501/
