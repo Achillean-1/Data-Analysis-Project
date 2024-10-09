@@ -16,8 +16,8 @@ st.subheader("Analisis dan Visualisasi Data Penyewaan Sepeda")
 
 @st.cache
 def load_data():
-    hour_df = pd.read_csv('C:/Users/Lenovo/Downloads/Bike Sharing Analysis/Bike Sharing Dataset/hour.csv')
-    day_df = pd.read_csv('C:/Users/Lenovo/Downloads/Bike Sharing Analysis/Bike Sharing Dataset/day.csv')
+    hour_df = pd.read_csv('Dashboard/hour.csv')
+    day_df = pd.read_csv('Dashboard/day.csv')
     return hour_df, day_df
 
 hour_df, day_df = load_data()
