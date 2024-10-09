@@ -24,9 +24,13 @@ The analysis uses the following datasets:
 
 ## Setup Environment - Shell/Terminal
 mkdir bike_sharing_analysis
+
 cd bike_sharing_analysis
+
 pipenv install
+
 pipenv shell
+
 pip install -r requirements.txt
 
 ## Run Streamlit
