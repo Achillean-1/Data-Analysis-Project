@@ -4,25 +4,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
-# Import library yang diperlukan
+
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
-# Judul Aplikasi
+
 st.title("Analisis Data: Bike Sharing Dataset")
 st.subheader("Analisis dan Visualisasi Data Penyewaan Sepeda")
 
-# Load Data
-@st.cache  # Cache data untuk mempercepat loading
+
+@st.cache
 def load_data():
-    hour_df = pd.read_csv('Dashboard/hour.csv')
-    day_df = pd.read_csv('Dashboard/day.csv')
+    hour_df = pd.read_csv('C:/Users/Lenovo/Downloads/Bike Sharing Analysis/Bike Sharing Dataset/hour.csv')
+    day_df = pd.read_csv('C:/Users/Lenovo/Downloads/Bike Sharing Analysis/Bike Sharing Dataset/day.csv')
     return hour_df, day_df
 
 hour_df, day_df = load_data()
 
-# Tampilkan informasi data
+
 if st.checkbox("Tampilkan Informasi Data Hour"):
     st.write(hour_df.info())
 
@@ -36,36 +36,72 @@ if st.checkbox("Tampilkan Deskripsi Data Hour"):
 if st.checkbox("Tampilkan Deskripsi Data Day"):
     st.write(day_df.describe())
 
-# Visualisasi
+
 st.subheader("Visualisasi Penyewaan Sepeda per Jam")
 plt.figure(figsize=(10, 5))
 sns.lineplot(data=hour_df, x='hr', y='cnt')
 plt.title('Jumlah Penyewaan Sepeda per Jam')
 plt.xlabel('Jam')
 plt.ylabel('Jumlah Penyewaan')
-st.pyplot(plt)  # Menampilkan plot dengan Streamlit
+st.pyplot(plt) 
 
-# Metrik
-st.subheader("Metrik Penyewaan Sepeda")
-st.write(f"Total Penyewaan Sepeda: {hour_df['cnt'].sum()}")
 
-# Model Prediksi (Contoh sederhana)
+st.subheader("Visualisasi Penyewaan Sepeda Berdasarkan Musim")
+plt.figure(figsize=(10, 5))
+sns.countplot(x='season', data=hour_df)
+plt.title('Distribusi Penyewaan Sepeda Berdasarkan Musim')
+plt.xlabel('Musim')
+plt.ylabel('Frekuensi')
+st.pyplot(plt)
+
+
+st.subheader("Heatmap Korelasi")
+numeric_df = hour_df.select_dtypes(include=['float64', 'int64'])
+corr_matrix = numeric_df.corr()
+plt.figure(figsize=(14, 10))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title('Correlation Heatmap')
+st.pyplot(plt)
+
+
+st.subheader("RFM Analysis")
+latest_date = day_df['dteday'].max()
+day_df['dteday'] = pd.to_datetime(day_df['dteday'])
+rfm = day_df.groupby('dteday').agg({
+    'cnt': 'sum',       
+    'casual': 'sum',    
+    'registered': 'sum'  
+}).reset_index()
+
+
+recency_df = day_df[['dteday']].drop_duplicates()
+recency_df['Recency'] = (latest_date - recency_df['dteday']).dt.days
+rfm = rfm.merge(recency_df, on='dteday')
+rfm.columns = ['dteday', 'Frequency', 'Monetary', 'Registered', 'Recency']
+
+# RFM Scoring
+rfm['R_Score'] = pd.qcut(rfm['Recency'], 4, labels=[4, 3, 2, 1])
+rfm['F_Score'] = pd.qcut(rfm['Frequency'], 4, labels=[1, 2, 3, 4])
+rfm['M_Score'] = pd.qcut(rfm['Monetary'], 4, labels=[1, 2, 3, 4])
+rfm['RFM_Score'] = rfm[['R_Score', 'F_Score', 'M_Score']].sum(axis=1)
+
+st.write("RFM Analysis:\n", rfm.head())
+
+hour_df['usage_level'] = pd.cut(hour_df['hr'], bins=[0, 6, 12, 18, 24], labels=['low', 'medium', 'high', 'very high'])
+usage_distribution = hour_df.groupby('usage_level')['cnt'].sum().reset_index()
+st.write("Distribusi Penyewaan Berdasarkan Tingkat Penggunaan:\n", usage_distribution)
+
 if st.checkbox("Tampilkan Model Prediksi"):
-    # Memisahkan fitur dan target
     X = hour_df[['temp', 'hum', 'windspeed']]
     y = hour_df['cnt']
     
-    # Split data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Membuat dan melatih model
     model = LinearRegression()
     model.fit(X_train, y_train)
     
-    # Prediksi
     y_pred = model.predict(X_test)
     
-    # Evaluasi
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
     
