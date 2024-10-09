@@ -31,13 +31,6 @@ if st.checkbox("Tampilkan Deskripsi Data Hour"):
 if st.checkbox("Tampilkan Deskripsi Data Day"):
     st.write(day_df.describe())
 
-st.subheader("Penyewaan Sepeda Berdasarkan Hari dalam Seminggu")
-plt.figure(figsize=(12, 6))
-sns.boxplot(x='weekday', y='cnt', data=hour_df)
-plt.title('Bike Rentals by Day of the Week')
-plt.xlabel('Day of the Week')
-plt.ylabel('Count of Rentals')
-st.pyplot(plt)
 
 st.subheader("Penyewaan Sepeda Berdasarkan Jam dalam Sehari")
 plt.figure(figsize=(12, 6))
@@ -47,20 +40,29 @@ plt.xlabel('Hour of the Day')
 plt.ylabel('Count of Rentals')
 st.pyplot(plt)
 
+
+st.subheader("Apa saja faktor yang paling memengaruhi jumlah penyewaan sepeda per jam?")
+numeric_df = hour_df.select_dtypes(include=['float64', 'int64'])
+corr_matrix = numeric_df.corr()
+plt.figure(figsize=(14, 10))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title('Correlation Heatmap')
+st.pyplot(plt)
+
+st.subheader("Penyewaan Sepeda Berdasarkan Hari dalam Seminggu")
+plt.figure(figsize=(12, 6))
+sns.boxplot(x='weekday', y='cnt', data=hour_df)
+plt.title('Bike Rentals by Day of the Week')
+plt.xlabel('Day of the Week')
+plt.ylabel('Count of Rentals')
+st.pyplot(plt)
+
 st.subheader("Visualisasi Penyewaan Sepeda Berdasarkan Musim")
 plt.figure(figsize=(10, 5))
 sns.countplot(x='season', data=hour_df)
 plt.title('Distribusi Penyewaan Sepeda Berdasarkan Musim')
 plt.xlabel('Musim')
 plt.ylabel('Frekuensi')
-st.pyplot(plt)
-
-st.subheader("Heatmap Korelasi")
-numeric_df = hour_df.select_dtypes(include=['float64', 'int64'])
-corr_matrix = numeric_df.corr()
-plt.figure(figsize=(14, 10))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-plt.title('Correlation Heatmap')
 st.pyplot(plt)
 
 st.subheader("RFM Analysis")
