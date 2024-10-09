@@ -49,6 +49,7 @@ sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
 plt.title('Correlation Heatmap')
 st.pyplot(plt)
 
+st.subheader("Bagaimana pola penyewaan sepeda berubah berdasarkan musim atau hari dalam seminggu?")
 st.subheader("Penyewaan Sepeda Berdasarkan Hari dalam Seminggu")
 plt.figure(figsize=(12, 6))
 sns.boxplot(x='weekday', y='cnt', data=hour_df)
