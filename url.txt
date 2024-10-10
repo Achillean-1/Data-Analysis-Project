@@ -1,1 +1,1 @@
-url: https://data-analysis-project-l7obshw8w8ggw5zhfhgneq.streamlit.app/
+url: https://data-analysis-project-n4frwydrtyz6tysjdnzotp.streamlit.app/
